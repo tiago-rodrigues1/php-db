@@ -1,62 +1,69 @@
+<?php
+//Connection
+$conn = new PDO("sqlite:carros.sqlite");
+$conn->setAttribute(
+    PDO::ATTR_DEFAULT_FETCH_MODE,
+    PDO::FETCH_OBJ
+);
+?>
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-
-    <style>
-        html {
-            background-color: #080808;
-            color: #F7F7F7;
-        }
-    </style>
+    <title>Carros DB</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 </head>
+
 <body>
-    <?php 
+    <h1>Carros DB</h1>
+    <nav>
+        <ul>
+            <li><a href="index.php">Home</a></li>
+            <li><a href="form.php">Criar</a></li>
+        </ul>
+    </nav>
+    <main>
+        <table class="table">
+            <tr>
+                <th>ID</th>
+                <th>Modelo</th>
+                <th>Marca</th>
+                <th>Ano</th>
+                <th>Km</th>
+                <th>Km/l</th>
+                <th>Editar</th>
+                <th>Excluir</th>
+            </tr>
+            <?php
+            $q = $conn->query("SELECT * FROM carros;");
+            $carros = $q->fetchAll();
 
-        $conn = new PDO("sqlite:carros_db.sqlite");
-        $conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
-
-        /* ------ INSERT ------ */
-
-        $modelo = "HB20";
-        $marca = "Hyunday";
-        $ano = 2022;
-        $km = 30000;
-        $kmPorLitro = 13.5;
-
-        $prepare = $conn->prepare("INSERT INTO carros (modelo, marca, ano, km, km_litro) VALUES (:modelo , :marca, :ano, :km, :km_litro);");
-
-        $prepare->bindParam(":modelo", $modelo);
-        $prepare->bindParam(":marca", $marca);
-        $prepare->bindParam(":ano", $ano);
-        $prepare->bindParam(":km", $km);
-        $prepare->bindParam(":km_litro", $km_litro);
-
-        // $prepare->execute();
-
-        /* ------ DELETE ------ */
-        
-        function id() {
-            return 2;
-        }
-
-        $prepare = $conn->prepare("DELETE FROM carros WHERE id = :id");
-
-        $prepare->bindParam(":id", id());
-
-        $prepare->execute();
-
-        /* ------ SELECT ------ */
-
-        $q = $conn->query("SELECT * FROM carros;");
-        $carros = $q->fetchAll();
-
-        echo "<pre>";
-        print_r($carros);
-        echo "</pre>";
-    ?>
+            foreach ($carros as $c) :
+            ?>
+                <tr>
+                    <td><?= $c->id ?></td>
+                    <td><?= $c->modelo ?></td>
+                    <td><?= $c->marca ?></td>
+                    <td><?= $c->ano ?></td>
+                    <td><?= $c->km ?></td>
+                    <td><?= $c->km_por_litro ?></td>
+                    <td>
+                        <a href="form.php?id=<?= $c->id ?>">
+                            Editar
+                        </a>
+                    </td>
+                    <td>
+                        <a href="ws/deletar.php?id=<?= $c->id ?>">
+                            Deletar
+                        </a>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </table>
+    </main>
 </body>
+
 </html>
